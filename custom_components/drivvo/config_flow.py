@@ -37,10 +37,9 @@ DATA_SCHEMA: vol.Schema = vol.Schema(
 class DrivvoOptionsFlowHandler(config_entries.OptionsFlow):
     """Config flow options for Drivvo."""
 
-    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
+    def __init__(self) -> None:
         """Initialize Drivvo options flow."""
-        self.config_entry: config_entries.ConfigEntry = config_entry
-
+    
     async def async_step_init(self, user_input: dict[str, Any]) -> FlowResult:
         """Manage the options."""
 
@@ -317,4 +316,4 @@ class DrivvoConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         config_entry: config_entries.ConfigEntry,
     ) -> config_entries.OptionsFlow:
         """Options callback for Drivvo."""
-        return DrivvoOptionsFlowHandler(config_entry)
+        return DrivvoOptionsFlowHandler()
