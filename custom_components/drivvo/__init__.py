@@ -262,15 +262,16 @@ async def get_data_vehicle(hass, user, password, id_vehicle):
             refuelling_value_total = 0
             refuelling_volume_total = 0
             for refuelling in api_data_refuellings:
-                refuelling_value_total += refuelling["valor_total"]
+                refuelling_value_total += refuelling.get("valor_total") or 0
 
                 if refuelling["volume"] != 0:
-                    refuelling_volume_total += refuelling["volume"]
+                    refuelling_volume_total += refuelling.get("volume") or 0
                 else:
-                    refuelling_volume_total += (
-                        refuelling["valor_total"] / refuelling["preco"]
-                    )
-
+                    volume_calc = 0
+                    if refuelling.get("preco") and refuelling.get("preco") != 0:
+                        volume_calc = refuelling["valor_total"] / refuelling["preco"]
+                    refuelling_volume_total += volume_calc
+    
             refuelling_distance = 0
             refuellings_odometers = [
                 {
@@ -318,11 +319,14 @@ async def get_data_vehicle(hass, user, password, id_vehicle):
                             odometer_old = odometer["odometro"]
                             break
 
-                        if odometer["volume"] != 0:
-                            volume += odometer["volume"]
+                        if odometer.get("volume") and odometer["volume"] != 0:
+                            volume += odometer.get("volume") or 0
                         else:
-                            volume += odometer["valor_total"] / odometer["preco"]
-
+                            volume_calc = 0
+                            if odometer.get("preco") and odometer["preco"] != 0:
+                                volume_calc = odometer["valor_total"] / odometer["preco"]
+                            volume += volume_calc
+                
                 if volume > 0 and odometer_old is not None:
                     refuelling_last_average = (
                         refuellings_odometers[0]["odometro"] - odometer_old
