@@ -264,8 +264,8 @@ async def get_data_vehicle(hass, user, password, id_vehicle):
             for refuelling in api_data_refuellings:
                 refuelling_value_total += refuelling.get("valor_total") or 0
 
-                if refuelling["volume"] != 0:
-                    refuelling_volume_total += refuelling.get("volume") or 0
+                if refuelling.get("volume") and refuelling["volume"] != 0:
+                    refuelling_volume_total += refuelling["volume"]
                 else:
                     volume_calc = 0
                     if refuelling.get("preco") and refuelling.get("preco") != 0:
@@ -344,10 +344,13 @@ async def get_data_vehicle(hass, user, password, id_vehicle):
             refuelling_value = refuelling["valor_total"]
             refuelling_price = refuelling["preco"]
             refuelling_odometer = refuelling["odometro"]
-            if refuelling["volume"] != 0:
+            if refuelling.get("volume") and refuelling["volume"] != 0:
                 refuelling_volume = refuelling["volume"]
             else:
-                refuelling_volume = refuelling["valor_total"] / refuelling["preco"]
+                volume_calc = 0
+                if refuelling.get("preco") and refuelling["preco"] != 0:
+                    volume_calc = refuelling["valor_total"] / refuelling["preco"]
+                refuelling_volume = volume_calc
             refuelling_reason = refuelling["tipo_motivo"]
             refuelling_tank_full = refuelling["tanque_cheio"]
 
